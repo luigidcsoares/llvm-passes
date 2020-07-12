@@ -22,8 +22,11 @@
 //===----------------------------------------------------------------------===//
 
 #include "InstCount.h"
+#include <iostream>
+#include <llvm/ADT/None.h>
 #include <llvm/IRReader/IRReader.h>
 #include <llvm/Passes/PassBuilder.h>
+#include <llvm/Passes/StandardInstrumentations.h>
 #include <llvm/Support/CommandLine.h>
 #include <llvm/Support/SourceMgr.h>
 #include <llvm/Support/raw_ostream.h>
@@ -49,12 +52,12 @@ struct InstCountWrapper : public PassInfoMixin<InstCountWrapper> {
     /// \returns all analysis preserved.
     PreservedAnalyses run(Module &M, ModuleAnalysisManager &MAM) {
         auto [ByFunction, Total] = MAM.getResult<instcount::Pass>(M);
-        errs() << "Number of instructions per function: \n\n";
+        std::cout << "Number of instructions per function: \n\n";
 
         for (auto [F, Count] : ByFunction)
-            errs() << "\t" << F->getName() << " => " << Count << "\n";
+            std::cout << "\t" << F->getName().str() << " => " << Count << "\n";
 
-        errs() << "\nTotal: " << Total << "\n";
+        std::cout << "\nTotal: " << Total << "\n";
         return PreservedAnalyses::all();
     }
 };
@@ -84,7 +87,11 @@ int main(int Argc, char **Argv) {
         return -1;
     }
 
-    PassBuilder PB;
+    PassInstrumentationCallbacks PIC;
+    StandardInstrumentations SI;
+    SI.registerCallbacks(PIC);
+
+    PassBuilder PB(nullptr, PipelineTuningOptions(), None, &PIC);
     ModuleAnalysisManager MAM;
 
     MAM.registerPass([&] { return instcount::Pass(); });
