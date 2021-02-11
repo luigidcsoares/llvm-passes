@@ -34,7 +34,7 @@
 using namespace llvm;
 
 /// A category for the options specified for this tool.
-static cl::OptionCategory InstCountCategory("invariant pass options");
+static cl::OptionCategory InstCountCategory("instruction count pass options");
 
 /// A required argument that specifies the module that will be transformed.
 static cl::opt<std::string> InputModule(cl::Positional,
@@ -69,8 +69,8 @@ int main(int Argc, char **Argv) {
 
     // Parse the command-line options that should be passed to the invariant
     // pass.
-    cl::ParseCommandLineOptions(
-        Argc, Argv, "transforms functions into versions that are invariant.\n");
+    cl::ParseCommandLineOptions(Argc, Argv,
+                                "count the number of llvm instructions.\n");
 
     // Makes sure llvm_shutdown() is called (which cleans up LLVM objects)
     //  http://llvm.org/docs/ProgrammersManual.html#ending-execution-with-llvm-shutdown
