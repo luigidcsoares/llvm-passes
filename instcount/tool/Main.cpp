@@ -22,6 +22,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "InstCount.h"
+
 #include <iostream>
 #include <llvm/ADT/None.h>
 #include <llvm/IRReader/IRReader.h>
@@ -88,10 +89,11 @@ int main(int Argc, char **Argv) {
     }
 
     PassInstrumentationCallbacks PIC;
-    StandardInstrumentations SI;
+    StandardInstrumentations SI(/* DebugLogging */ false);
     SI.registerCallbacks(PIC);
 
-    PassBuilder PB(nullptr, PipelineTuningOptions(), None, &PIC);
+    PassBuilder PB(/* DebugLogging */ false, nullptr, PipelineTuningOptions(),
+                   None, &PIC);
     ModuleAnalysisManager MAM;
 
     MAM.registerPass([&] { return instcount::Pass(); });
