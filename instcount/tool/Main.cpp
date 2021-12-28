@@ -92,8 +92,7 @@ int main(int Argc, char **Argv) {
     StandardInstrumentations SI(/* DebugLogging */ false);
     SI.registerCallbacks(PIC);
 
-    PassBuilder PB(/* DebugLogging */ false, nullptr, PipelineTuningOptions(),
-                   None, &PIC);
+    PassBuilder PB(nullptr, PipelineTuningOptions(), None, &PIC);
     ModuleAnalysisManager MAM;
 
     MAM.registerPass([&] { return instcount::Pass(); });
